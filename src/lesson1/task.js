@@ -2,7 +2,7 @@
   Напишите функцию, которая принимает 1 аргумент и возварщает его тип
 */
 function getDataType(variable) {
-
+  return typeof variable;
 }
 
 /*
@@ -14,7 +14,27 @@ function getDataType(variable) {
   'object-function' - если функция
 */
 function getDataTypePseudoName(variable) {
-
+  switch (typeof variable) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+    case 'symbol':
+      return 'primitive';
+    case 'undefined':
+      if (arguments.length) {
+        return 'primitive-special'
+      }
+      return new Error('no agruments');
+    case 'function':
+      return 'object-function';
+    case 'object':
+        if (Array.isArray(variable)) {
+          return 'object-array';
+        } else if (variable === null) {
+          return 'primitive-special';
+        }
+        return 'object';
+  }
 }
 
 
@@ -25,7 +45,12 @@ function getDataTypePseudoName(variable) {
   и -1 в другом случае
 */
 function compareByType(a, b) {
-
+  if (a === b) {
+    return 1;
+  } else if (a == b) {
+    return 0
+  }
+  return -1;
 }
 
 // Numbers
@@ -37,7 +62,10 @@ function compareByType(a, b) {
   в любом другом случае возврвщвет -1
 */
 function increase(value) {
-
+  if (typeof value === 'number' && !Number.isNaN(value) ) {
+    return value + 1;
+  }
+  return -1;
 }
 
 /*
@@ -45,7 +73,12 @@ function increase(value) {
   и в случае если аргумент не Infinity или NaN возвращает строку 'safe' иначе 'danger'
 */
 function testForSafeNumber(value) {
-
+  if (typeof value !== 'number') {
+    return 'safe';
+  } else if (isFinite(value)) {
+    return 'safe';
+  }
+  return 'danger';
 }
 
 
@@ -57,7 +90,7 @@ function testForSafeNumber(value) {
   и возвращает массив из елементов строки разделенных по пробелу ' '
 */
 function stringToArray(str) {
-
+  return str.split(' ');
 }
 
 
@@ -66,7 +99,7 @@ function stringToArray(str) {
   и возвращает часть этой строки до первой запятой
 */
 function getStringPart(str) {
-
+  return str.split(',')[0];
 }
 
 /*
@@ -75,7 +108,11 @@ function getStringPart(str) {
   false в противоположном случае
 */
 function isSingleSymbolMatch(str, symbol) {
-
+  if (str.indexOf(symbol) === str.lastIndexOf(symbol)) {
+    return str.indexOf(symbol);
+  } else {
+    return false;
+  }
 }
 
 /*
@@ -85,7 +122,10 @@ function isSingleSymbolMatch(str, symbol) {
   или строку разделенную "-" если не задан
 */
 function join(array, separator) {
-
+  if (separator) {
+    return array.join(separator);
+  }
+  return array.join('-');
 }
 
 
@@ -94,7 +134,7 @@ function join(array, separator) {
   и возвращает один состоящий из элементов перового и второго (последовательно сначала первый потом второй)
 */
 function glue(arrA, arrB) {
-
+  return arrA.concat(arrB);
 }
 
 
@@ -103,7 +143,7 @@ function glue(arrA, arrB) {
   и возвращает другой массив отсортированный от большего к меньшему
 */
 function order(arr) {
-
+  return arr.sort((a,b) => b > a).slice();
 }
 
 
@@ -112,7 +152,7 @@ function order(arr) {
   и возвращает другой без чисел которые меньше 0
 */
 function removeNegative(arr) {
-
+  return arr.filter(a => a >= 0);
 }
 
 /*
@@ -122,7 +162,7 @@ function removeNegative(arr) {
   [1,2,3], [1, 3] => [2]
 */
 function without(arrA, arrB) {
-
+  return arrA.filter(a => !arrB.includes(a));
 }
 
 /*
@@ -133,7 +173,17 @@ function without(arrA, arrB) {
   '12/6' => 2
 */
 function calcExpression(expression) {
-
+  const arrExpression = expression.split(/(\+|\/|\*|-)/);
+  switch (arrExpression[1]) {
+    case '+':
+      return arrExpression[0] + arrExpression[2];
+    case '-':
+      return arrExpression[0] - arrExpression[2];
+    case '/':
+      return arrExpression[0] / arrExpression[2];
+    case '*':
+      return arrExpression[0] * arrExpression[2];
+  }
 }
 
 /*
@@ -145,7 +195,27 @@ function calcExpression(expression) {
   '100>5' => true
 */
 function calcComparison(expression) {
+  const arrExpression = expression.split(/(<=|>=|>|<|=)/);
+  switch (arrExpression[1]) {
+    case '<=':
+      return checkNum(arrExpression[0]) <= checkNum(arrExpression[2]);
+    case '>=':
+      return checkNum(arrExpression[0]) >= checkNum(arrExpression[2]);
+    case '=':
+      return checkNum(arrExpression[0]) === checkNum(arrExpression[2]);
+    case '>':
+      return checkNum(arrExpression[0]) > checkNum(arrExpression[2]);
+    case '<':
+      return checkNum(arrExpression[0]) < checkNum(arrExpression[2]);
+  }
 
+  function checkNum(num) {
+    num = + num;
+    if (typeof num === 'number' && !Number.isNaN(num)) {
+      return num;
+    }
+    throw new Error('wrong epxression');
+  }
 }
 
 /*
@@ -157,7 +227,14 @@ function calcComparison(expression) {
   { a: 1, b: 2 }, '.c' => exception
 */
 function evalKey(obj, expression) {
-
+  const path = expression.split('.');
+  const res = path.reduce((sum, el) => {
+    return sum[el];
+  }, obj)
+  if (res) {
+    return res;
+  }
+  throw new Error('wrong expression')
 }
 
 export default {
