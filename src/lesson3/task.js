@@ -1,5 +1,5 @@
 /*
-  Write a function, that has 2 required parameters, and any amount of optional parameters. 
+  Write a function, that has 2 required parameters, and any amount of optional parameters.
   Function should return a number - amount of optional parameters that were passed into function.
   Hint: you are allowed to modify both function definition and function body.
 */
@@ -69,5 +69,5 @@ export default {
   addLogCapability,
   logger,
   compose,
-  partial
+  partial,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return, default-case */
 /*
   Напишите функцию, которая принимает 1 аргумент и возварщает его тип
 */
@@ -22,18 +23,18 @@ function getDataTypePseudoName(variable) {
       return 'primitive';
     case 'undefined':
       if (arguments.length) {
-        return 'primitive-special'
+        return 'primitive-special';
       }
-      return new Error('no agruments');
+      throw new Error('no agruments');
     case 'function':
       return 'object-function';
     case 'object':
-        if (Array.isArray(variable)) {
-          return 'object-array';
-        } else if (variable === null) {
-          return 'primitive-special';
-        }
-        return 'object';
+      if (Array.isArray(variable)) {
+        return 'object-array';
+      } else if (variable === null) {
+        return 'primitive-special';
+      }
+      return 'object';
   }
 }
 
@@ -47,8 +48,8 @@ function getDataTypePseudoName(variable) {
 function compareByType(a, b) {
   if (a === b) {
     return 1;
-  } else if (a == b) {
-    return 0
+  } else if (a == b) { // eslint-disable-line eqeqeq
+    return 0;
   }
   return -1;
 }
@@ -62,7 +63,7 @@ function compareByType(a, b) {
   в любом другом случае возврвщвет -1
 */
 function increase(value) {
-  if (typeof value === 'number' && !Number.isNaN(value) ) {
+  if (typeof value === 'number' && !Number.isNaN(value)) {
     return value + 1;
   }
   return -1;
@@ -75,13 +76,11 @@ function increase(value) {
 function testForSafeNumber(value) {
   if (typeof value !== 'number') {
     return 'safe';
-  } else if (isFinite(value)) {
+  } else if (Number.isFinite(value)) {
     return 'safe';
   }
   return 'danger';
 }
-
-
 
 // Strings
 
@@ -108,11 +107,11 @@ function getStringPart(str) {
   false в противоположном случае
 */
 function isSingleSymbolMatch(str, symbol) {
-  if (str.indexOf(symbol) === str.lastIndexOf(symbol)) {
-    return str.indexOf(symbol);
-  } else {
-    return false;
+  const symbolIndex = str.indexOf(symbol);
+  if (symbolIndex === str.lastIndexOf(symbol)) {
+    return symbolIndex;
   }
+  return false;
 }
 
 /*
@@ -143,7 +142,7 @@ function glue(arrA, arrB) {
   и возвращает другой массив отсортированный от большего к меньшему
 */
 function order(arr) {
-  return arr.sort((a,b) => b > a).slice();
+  return arr.sort((a, b) => b > a).slice();
 }
 
 
@@ -173,16 +172,17 @@ function without(arrA, arrB) {
   '12/6' => 2
 */
 function calcExpression(expression) {
-  const arrExpression = expression.split(/(\+|\/|\*|-)/);
+  const arrExpression = expression.split(/(-\w*|w*)(\/|\+|\*|-)(-\w*|w*)/).filter(el => el !== '');
+
   switch (arrExpression[1]) {
     case '+':
-      return arrExpression[0] + arrExpression[2];
+      return Number(arrExpression[0]) + Number(arrExpression[2]);
     case '-':
-      return arrExpression[0] - arrExpression[2];
+      return Number(arrExpression[0]) - Number(arrExpression[2]);
     case '/':
-      return arrExpression[0] / arrExpression[2];
+      return Number(arrExpression[0]) / Number(arrExpression[2]);
     case '*':
-      return arrExpression[0] * arrExpression[2];
+      return Number(arrExpression[0]) * Number(arrExpression[2]);
   }
 }
 
@@ -194,7 +194,16 @@ function calcExpression(expression) {
   либо бросает exception в случае ошибки.
   '100>5' => true
 */
+
 function calcComparison(expression) {
+  function checkNum(num) {
+    const numPlus = +num;
+    if (typeof numPlus === 'number' && !Number.isNaN(numPlus)) {
+      return numPlus;
+    }
+    throw new Error('wrong epxression');
+  }
+
   const arrExpression = expression.split(/(<=|>=|>|<|=)/);
   switch (arrExpression[1]) {
     case '<=':
@@ -208,14 +217,6 @@ function calcComparison(expression) {
     case '<':
       return checkNum(arrExpression[0]) < checkNum(arrExpression[2]);
   }
-
-  function checkNum(num) {
-    num = + num;
-    if (typeof num === 'number' && !Number.isNaN(num)) {
-      return num;
-    }
-    throw new Error('wrong epxression');
-  }
 }
 
 /*
@@ -227,14 +228,19 @@ function calcComparison(expression) {
   { a: 1, b: 2 }, '.c' => exception
 */
 function evalKey(obj, expression) {
-  const path = expression.split('.');
-  const res = path.reduce((sum, el) => {
-    return sum[el];
-  }, obj)
-  if (res) {
-    return res;
+  const path = expression.split(/(\.)/);
+  if (path.length < 2) {
+    throw new Error('wrong expression');
   }
-  throw new Error('wrong expression')
+  return path.reduce((sum, el, i) => {
+    if (path[i - 1] === '.') {
+      if (Object.prototype.hasOwnProperty.call(sum, el)) {
+        return sum[el];
+      }
+      throw new Error('wrong expression');
+    }
+    return sum;
+  }, obj);
 }
 
 export default {
@@ -253,5 +259,5 @@ export default {
   without,
   calcExpression,
   calcComparison,
-  evalKey
+  evalKey,
 };
