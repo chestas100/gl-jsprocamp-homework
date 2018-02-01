@@ -3,8 +3,8 @@
   Function should return a number - amount of optional parameters that were passed into function.
   Hint: you are allowed to modify both function definition and function body.
 */
-export function countOptional() {
-
+export function countOptional(a, b, ...rest) {
+  return rest.length;
 }
 
 /*
@@ -30,7 +30,15 @@ export function bindContext(fn, context) {
   Take to account, that you should track log call index starting from 1
 */
 export function addLogCapability(object) {
-
+  let counter = 0;
+  function log() {
+    counter += 1;
+    if (Object.prototype.hasOwnProperty.call(this, 'name')) {
+      return `Log message #${counter}: my name is ${object.name}`;
+    }
+    return `Log message #${counter}: I dont have name`;
+  }
+  object.log = log.bind(object);
 }
 
 /*
@@ -45,8 +53,8 @@ export function logger(topic) {
 /*
   Implement left to right compose function
 */
-export function compose() {
-
+export function compose(...args) {
+  return name => args.reduceRight((res, el) => res + el(''), '') + name;
 }
 
 /*
