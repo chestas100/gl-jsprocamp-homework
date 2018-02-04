@@ -172,7 +172,10 @@ function without(arrA, arrB) {
   '12/6' => 2
 */
 function calcExpression(expression) {
-  const arrExpression = expression.split(/(-\w*|w*)(\/|\+|\*|-)(-\w*|w*)/).filter(el => el !== '');
+  const arrExpression = expression
+    .replace(/\s/g, '')
+    .split(/([-]{0,1}[\w]+)([-+*/]{1})([-\w]+)/)
+    .filter(el => el !== '');
 
   switch (arrExpression[1]) {
     case '+':
