@@ -10,10 +10,9 @@ export function countOptional(a, b, ...rest) {
 /*
   Write your implementation of native Function.prototype.bind method
 */
-export function bindContext(fn, context) {
-
+export function bindContext(fn, context, ...args) {
+  return () => fn.apply(context, args);
 }
-
 
 /*
   Write function that accepts 1 parameter - object. It should add to this object a log interface so as:
@@ -47,7 +46,7 @@ export function addLogCapability(object) {
   myLogger('first message'); //=> My Topic: first message
 */
 export function logger(topic) {
-
+  return msg => `${topic}: ${msg}`;
 }
 
 /*
@@ -68,7 +67,7 @@ export function compose(...args) {
   sumWith4(5) // 9
 */
 export function partial(fn) {
-
+  return (...args) => part => fn(...args, part);
 }
 
 export default {
