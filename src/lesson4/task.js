@@ -8,8 +8,90 @@
   in forEach() method.
   mySet = createSet(['a', 'b', 'c'])
 */
-export function createSet(arr) {
 
+
+const commonObjectPropery = {
+  clear() {
+    this.data.length = 0;
+    if (this.dataKeys) {
+      this.dataKeys.length = 0;
+    }
+  },
+  has(el) {
+    if (this.dataKeys) {
+      return this.dataKeys.includes(el);
+    }
+    return this.data.includes(el);
+  },
+  get size() {
+    return this.data.length;
+  },
+};
+
+const customSetProperty = {
+  add(el) {
+    if (!this.has(el)) {
+      this.data.push(el);
+    }
+    return this.data;
+  },
+  delete(el) {
+    const flag = this.has(el);
+    if (flag) {
+      this.data.splice(this.data.indexOf(el), 1);
+    }
+    return flag;
+  },
+  forEach(fn) {
+    return this.data.forEach(fn);
+  },
+};
+
+const customMapProperty = {
+  set(key, value) {
+    if (!this.has(key)) {
+      this.data.push([key, value]);
+      this.dataKeys.push(key);
+    }
+    return this.data;
+  },
+  get(key) {
+    this.data.some(el => {
+      if (el[0] === key) {
+        return el[1];
+      }
+      return false;
+    });
+  },
+  delete(el) {
+    const flag = this.has(el[0]);
+    if (flag) {
+      const index = this.dataKeys.indexOf(el[0]);
+      this.data.splice(index, 1);
+      this.dataKeys.splice(index, 1);
+    }
+    return flag;
+  },
+  forEach(fn) {
+    return this.data.forEach((el, i, arr) => fn.call(null, el[1], el[0], arr));
+  },
+};
+
+export function createSet(arr = []) {
+  const obj = {
+    data: [],
+  };
+
+  Object.setPrototypeOf(customSetProperty, commonObjectPropery);
+  Object.setPrototypeOf(obj, customSetProperty);
+
+  arr.forEach(el => {
+    if (!obj.has(el)) {
+      obj.data.push(el);
+    }
+  });
+
+  return obj;
 }
 
 /*
@@ -22,11 +104,26 @@ export function createSet(arr) {
   in forEach() method.
   myMap = createMap([['a', 1], ['b', 2], ['c', 3]])
 */
-export function createMap(arr) {
+export function createMap(arr = []) {
+  const obj = {
+    dataKeys: [],
+    data: [],
+  };
 
+  Object.setPrototypeOf(customMapProperty, commonObjectPropery);
+  Object.setPrototypeOf(obj, customMapProperty);
+
+  arr.forEach(el => {
+    if (!obj.has(el[0])) {
+      obj.data.push(el);
+      obj.dataKeys.push(el[0]);
+    }
+  });
+
+  return obj;
 }
 
 export default {
   createSet,
-  createMap
+  createMap,
 };
