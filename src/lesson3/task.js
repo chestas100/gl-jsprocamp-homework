@@ -10,8 +10,8 @@ export function countOptional(a, b, ...rest) {
 /*
   Write your implementation of native Function.prototype.bind method
 */
-export function bindContext(fn, context, ...args) {
-  return () => fn.apply(context, args);
+export function bindContext(fn, context, ...bindArgs) {
+  return (...funArgs) => fn.apply(context, bindArgs.concat(funArgs));
 }
 
 /*
@@ -30,14 +30,13 @@ export function bindContext(fn, context, ...args) {
 */
 export function addLogCapability(object) {
   let counter = 0;
-  function log() {
+  object.log = function log() {
     counter += 1;
     if (Object.prototype.hasOwnProperty.call(this, 'name')) {
       return `Log message #${counter}: my name is ${object.name}`;
     }
     return `Log message #${counter}: I dont have name`;
-  }
-  object.log = log.bind(object);
+  };
 }
 
 /*
@@ -53,7 +52,7 @@ export function logger(topic) {
   Implement left to right compose function
 */
 export function compose(...args) {
-  return name => args.reduceRight((res, el) => res + el(''), '') + name;
+  return name => args.reduce((res, el) => el(res), name);
 }
 
 /*
@@ -67,7 +66,7 @@ export function compose(...args) {
   sumWith4(5) // 9
 */
 export function partial(fn) {
-  return (...args) => part => fn(...args, part);
+  return (...args) => (...partialArgs) => fn(...args.concat(partialArgs));
 }
 
 export default {
