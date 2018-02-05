@@ -26,6 +26,7 @@ const commonObjectPropery = {
   get size() {
     return this.data.length;
   },
+  length: 0,
 };
 
 const customSetProperty = {
@@ -44,6 +45,13 @@ const customSetProperty = {
   },
   forEach(fn) {
     return this.data.forEach(fn);
+  },
+  createData(initData) {
+    initData.forEach(el => {
+      if (!this.has(el)) {
+        this.data.push(el);
+      }
+    });
   },
 };
 
@@ -75,6 +83,14 @@ const customMapProperty = {
   forEach(fn) {
     return this.data.forEach((el, i, arr) => fn.call(null, el[1], el[0], arr));
   },
+  createData(initData) {
+    initData.forEach(el => {
+      if (!this.has(el[0])) {
+        this.data.push(el);
+        this.dataKeys.push(el[0]);
+      }
+    });
+  },
 };
 
 export function createSet(arr = []) {
@@ -85,11 +101,7 @@ export function createSet(arr = []) {
   Object.setPrototypeOf(customSetProperty, commonObjectPropery);
   Object.setPrototypeOf(obj, customSetProperty);
 
-  arr.forEach(el => {
-    if (!obj.has(el)) {
-      obj.data.push(el);
-    }
-  });
+  obj.createData(arr);
 
   return obj;
 }
@@ -113,12 +125,7 @@ export function createMap(arr = []) {
   Object.setPrototypeOf(customMapProperty, commonObjectPropery);
   Object.setPrototypeOf(obj, customMapProperty);
 
-  arr.forEach(el => {
-    if (!obj.has(el[0])) {
-      obj.data.push(el);
-      obj.dataKeys.push(el[0]);
-    }
-  });
+  obj.createData(arr);
 
   return obj;
 }
