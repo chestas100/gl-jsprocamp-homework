@@ -186,6 +186,8 @@ function calcExpression(expression) {
       return Number(arrExpression[0]) / Number(arrExpression[2]);
     case '*':
       return Number(arrExpression[0]) * Number(arrExpression[2]);
+    default:
+      return NaN;
   }
 }
 
@@ -231,7 +233,7 @@ function calcComparison(expression) {
   { a: 1, b: 2 }, '.c' => exception
 */
 function evalKey(obj, expression) {
-  const path = expression.split(/(\.)/);
+  const path = expression.replace(/\s/g, '').split(/(\.)/);
   if (path.length < 2) {
     throw new Error('wrong expression');
   }
