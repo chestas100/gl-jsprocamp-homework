@@ -35,7 +35,11 @@ describe('async javascript', function () {
     it('it should return array of string', async () => {
       expect.hasAssertions();
       const data = await getPilots('Millennium');
-      expect(data).toEqual(['Chewbacca', 'Han Solo', 'Lando Calrissian', 'Nien Nunb']);
+      expect(data).toContain('Chewbacca');
+      expect(data).toContain('Han Solo');
+      expect(data).toContain('Lando Calrissian');
+      expect(data).toContain('Nien Nunb');
+      expect(data.length).toEqual(4);
     });
   })
 })

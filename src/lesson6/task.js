@@ -3,13 +3,17 @@ import fetch from 'isomorphic-fetch';
 // с помощью Fetch API и swapi.co API получить следующие данные
 const baseUrl = 'https://swapi.co/api';
 
-function getArrayOfNameByUrls(arrOfUrl) {
-  const promises = arrOfUrl
-    .map(url => fetch(url)
-      .then(data => data.json()
-        .then(person => person.name)));
+async function getUserNameByUrl(url) {
+  const data = await (await fetch(url)).json();
+  return data.name;
+}
 
-  return Promise.all(promises).then(arrOfName => arrOfName);
+async function getArrayOfNameByUrls(arrOfUrl) {
+  const arrOfName = [];
+  await Promise.all(arrOfUrl.map(async url => {
+    arrOfName.push(await getUserNameByUrl(url));
+  }));
+  return arrOfName;
 }
 
 function dataResolver(data) {
@@ -23,36 +27,36 @@ function dataResolver(data) {
 
 // Климат на любой планете по её имени
 // {planetName} – String
-const getClimate = function getClimate(planetName) {
-  return fetch(`${baseUrl}/planets/?search=${planetName}`).then(res => res.json().then(data => {
-    const resolvedData = dataResolver(data);
-    return resolvedData.status ? resolvedData.data.climate : resolvedData.data;
-  })).catch(err => {
+const getClimate = async function getClimate(planetName) {
+  const planetRes = await fetch(`${baseUrl}/planets/?search=${planetName}`).catch(err => {
     throw new Error(err);
   });
+  const data = await planetRes.json();
+  const resolvedData = await dataResolver(data);
+  return resolvedData.status ? resolvedData.data.climate : resolvedData.data;
 };
 
 // Получить информацию (Object) о любом персонаже по имени
 // {name} – String
-const getProfile = function getProfile(name) {
-  return fetch(`${baseUrl}/people/?search=${name}`).then(res => res.json().then(data => {
-    const resolvedData = dataResolver(data);
-    return resolvedData.data;
-  })).catch(err => {
+const getProfile = async function getProfile(name) {
+  const profileRes = await fetch(`${baseUrl}/people/?search=${name}`).catch(err => {
     throw new Error(err);
   });
+  const data = await profileRes.json();
+  const resolvedData = await dataResolver(data);
+  return resolvedData.data;
 };
 
 // Получить список пилотов (имена в виде Array of Strings) космического корабля
 // по его названию
 // {starshipName} - String
-const getPilots = function getPilots(starshipName) {
-  return fetch(`${baseUrl}/starships/?search=${starshipName}`).then(res => res.json().then(data => {
-    const resolvedData = dataResolver(data);
-    return resolvedData.status ? getArrayOfNameByUrls(resolvedData.data.pilots) : resolvedData.data;
-  })).catch(err => {
+const getPilots = async function getPilots(starshipName) {
+  const starshipRes = await fetch(`${baseUrl}/starships/?search=${starshipName}`).catch(err => {
     throw new Error(err);
   });
+  const data = await starshipRes.json();
+  const resolvedData = await dataResolver(data);
+  return resolvedData.status ? getArrayOfNameByUrls(resolvedData.data.pilots) : resolvedData.data;
 };
 
 
