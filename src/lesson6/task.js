@@ -9,11 +9,9 @@ async function getUserNameByUrl(url) {
 }
 
 async function getArrayOfNameByUrls(arrOfUrl) {
-  const arrOfName = [];
-  await Promise.all(arrOfUrl.map(async url => {
-    arrOfName.push(await getUserNameByUrl(url));
+  return await Promise.all(arrOfUrl.map(async url => {
+    return await getUserNameByUrl(url);
   }));
-  return arrOfName;
 }
 
 function dataResolver(data) {
