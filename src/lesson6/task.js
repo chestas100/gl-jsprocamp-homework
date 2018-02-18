@@ -8,10 +8,8 @@ async function getUserNameByUrl(url) {
   return data.name;
 }
 
-async function getArrayOfNameByUrls(arrOfUrl) {
-  return await Promise.all(arrOfUrl.map(async url => {
-    return await getUserNameByUrl(url);
-  }));
+function getArrayOfNameByUrls(arrOfUrl) {
+  return Promise.all(arrOfUrl.map(url => getUserNameByUrl(url)));
 }
 
 function dataResolver(data) {
